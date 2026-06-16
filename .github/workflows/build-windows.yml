@@ -50,5 +50,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: WashDelivery-Windows-Installer
-          path: WashDelivery_Setup.exe
+          path: Output/WashDelivery_Setup.exe
           retention-days: 30
