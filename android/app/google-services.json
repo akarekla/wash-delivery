@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "689483175979",
+    "project_id": "washer-app-b93c2",
+    "storage_bucket": "washer-app-b93c2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:689483175979:android:f87777cd3772f75666b26e",
+        "android_client_info": {
+          "package_name": "com.akarekla.washer_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQ8YH8xH0kut2cpG7xjKooh0jGiVhPZgM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
