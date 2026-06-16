@@ -34,9 +34,6 @@ jobs:
       - name: Regenerate Windows build files
         run: flutter create --platforms=windows .
 
-      - name: Generate launcher icons
-        run: flutter pub run flutter_launcher_icons
-
       - name: Build Windows release
         run: flutter build windows --release
 
