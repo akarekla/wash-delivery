@@ -6,7 +6,41 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Write Firebase credentials
+        env:
+          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS_DART }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          echo "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+          echo "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.2'
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: WashDelivery-Android-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+  build-windows:
     runs-on: windows-latest
 
     steps:
@@ -21,7 +55,7 @@ jobs:
         run: |
           [System.IO.File]::WriteAllText("lib/firebase_options.dart", $env:FIREBASE_OPTIONS_DART)
           [System.IO.File]::WriteAllText("android/app/google-services.json", $env:GOOGLE_SERVICES_JSON)
-  
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
