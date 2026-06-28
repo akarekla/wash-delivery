@@ -18,6 +18,26 @@ class FirestoreService {
     await _db.collection('entries').doc(entryId).delete();
   }
 
+  // ── Check-offs (delivered clients) ──────────────────────────────────────────
+  // One doc per date holds the list of checked-off client names.
+
+  Stream<Set<String>> watchCheckoffs(String date) {
+    return _db.collection('checkoffs').doc(date).snapshots().map((doc) {
+      final data = doc.data();
+      final list = (data?['clients'] as List<dynamic>?) ?? [];
+      return list.map((e) => e as String).toSet();
+    });
+  }
+
+  Future<void> setCheckoff(String date, String client, bool done) async {
+    final ref = _db.collection('checkoffs').doc(date);
+    await ref.set({
+      'clients': done
+          ? FieldValue.arrayUnion([client])
+          : FieldValue.arrayRemove([client]),
+    }, SetOptions(merge: true));
+  }
+
   // ── Products ──────────────────────────────────────────────────────────────
 
   static const List<String> _defaultProducts = [
@@ -106,7 +126,7 @@ class FirestoreService {
   }
 
   // Single where-clause only; employee filtered client-side to avoid
-  // composite index requirement.
+  // composite index requirement. Newest entries first.
   Stream<List<Entry>> entriesForEmployeeAndDate(String employee, String date) {
     return _db
         .collection('entries')
@@ -117,7 +137,22 @@ class FirestoreService {
           .map(Entry.fromFirestore)
           .where((e) => e.employeeName == employee)
           .toList();
-      entries.sort((a, b) => a.id.compareTo(b.id));
+      entries.sort((a, b) => b.createdAtMs.compareTo(a.createdAtMs));
+      return entries;
+    });
+  }
+
+  // Range query on same field — no composite index required.
+  // Returns entries for dates in [monthStart, monthEnd] inclusive (YYYY-MM-DD).
+  Stream<List<Entry>> entriesForMonth(String monthStart, String monthEnd) {
+    return _db
+        .collection('entries')
+        .where('date', isGreaterThanOrEqualTo: monthStart)
+        .where('date', isLessThanOrEqualTo: monthEnd)
+        .snapshots()
+        .map((snap) {
+      final entries = snap.docs.map(Entry.fromFirestore).toList();
+      entries.sort((a, b) => b.createdAtMs.compareTo(a.createdAtMs));
       return entries;
     });
   }
