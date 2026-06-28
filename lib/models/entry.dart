@@ -7,6 +7,7 @@ class Entry {
   final String productName;
   final int quantity;
   final String date;
+  final int createdAtMs; // client-side ms timestamp for reliable sort
 
   const Entry({
     required this.id,
@@ -15,6 +16,7 @@ class Entry {
     required this.productName,
     required this.quantity,
     required this.date,
+    this.createdAtMs = 0,
   });
 
   factory Entry.fromFirestore(DocumentSnapshot doc) {
@@ -26,6 +28,7 @@ class Entry {
       productName: data['productName'] as String,
       quantity: (data['quantity'] as num).toInt(),
       date: data['date'] as String,
+      createdAtMs: (data['createdAtMs'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -35,6 +38,7 @@ class Entry {
         'productName': productName,
         'quantity': quantity,
         'date': date,
+        'createdAtMs': DateTime.now().millisecondsSinceEpoch,
         'createdAt': FieldValue.serverTimestamp(),
       };
 }
