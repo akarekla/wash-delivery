@@ -4,6 +4,7 @@ project(washer_app LANGUAGES CXX)
 
 # Allow Firebase C++ SDK which uses old cmake_minimum_required versions.
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5 CACHE STRING "" FORCE)
+
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
 set(BINARY_NAME "washer_app")
